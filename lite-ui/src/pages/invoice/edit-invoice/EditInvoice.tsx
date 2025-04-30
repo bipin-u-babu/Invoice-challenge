@@ -11,20 +11,16 @@ import {
 } from "@mantine/core";
 import styles from "./EditInvoice.module.scss";
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer } from "react";
 import { DatePicker } from "@mantine/dates";
-import { Customer, Invoice } from "../Invoice.model";
-import { createInvoice, fetchInvoice } from "../InvoiceApi";
-import {
-  formStateHandler,
-  initialInvoiceFormState,
-  InvoiceFormState,
-} from "./formState";
+import { fetchInvoice } from "../InvoiceApi";
+import { formStateHandler, initialInvoiceFormState } from "./formState";
 import { useInvoiceSubmit } from "./useInvoiceSubmit";
+import { useTranslation } from "react-i18next";
 
 const EditInvoice = (): JSX.Element => {
   const params = useParams();
-  const navigate = useNavigate();
+  const { t } = useTranslation();
   const isNewInvoice = params.invoiceId === undefined;
   const [invoiceForm, dispatch] = useReducer(
     formStateHandler,
@@ -66,15 +62,15 @@ const EditInvoice = (): JSX.Element => {
       <form>
         <Title mb={"xl"} order={2}>
           {isNewInvoice
-            ? "Create new invoice"
-            : `Edit invoice: ${params.invoiceId}`}
+            ? t("CREATE_INVOICE")
+            : `${t("EDIT_INVOICE")}: ${params.invoiceId}`}
         </Title>
         <div className={styles["form-section"]}>
           <SimpleGrid cols={2}>
             <div>
-              <Title order={5}>Date</Title>
+              <Title order={5}>{t("DATE")}</Title>
               <Text fz="xs" c="dimmed">
-                Enter due date of the invoice
+                {t("INVOICE_FORM_DATE_LABEL")}
               </Text>
             </div>
             <DatePicker
@@ -91,28 +87,27 @@ const EditInvoice = (): JSX.Element => {
         <div className={styles["form-section"]}>
           <SimpleGrid cols={2}>
             <div>
-              <Title order={5}>Customer</Title>
+              <Title order={5}>{t("CUSTOMER")}</Title>
               <Text fz="xs" c="dimmed">
-                Enter the name and surname of the customer the invoice belongs
-                to
+                {t("INVOICE_FORM_CUSTOMER_LABEL")}
               </Text>
             </div>
             <div>
               <TextInput
                 required={true}
                 value={invoiceForm.customer.givenname}
-                onChange={(e) => {
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   dispatch({ type: "name", payload: e.currentTarget.value });
                 }}
-                label="Name"
+                label={t("NAME")}
               />
               <TextInput
                 required={true}
                 value={invoiceForm.customer.surname}
-                onChange={(e) => {
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   dispatch({ type: "surname", payload: e.currentTarget.value });
                 }}
-                label="Surname"
+                label={t("SURNAME")}
               />
             </div>
           </SimpleGrid>
@@ -120,7 +115,7 @@ const EditInvoice = (): JSX.Element => {
         <div className={styles["form-section"]}>
           <SimpleGrid cols={2}>
             <div>
-              <Title order={5}>Price</Title>
+              <Title order={5}>{t("PRICE")}</Title>
             </div>
             <div>
               <NumberInput
@@ -128,14 +123,14 @@ const EditInvoice = (): JSX.Element => {
                 value={invoiceForm.priceNet}
                 onChange={onAmountNetChange}
                 precision={2}
-                label="Price (Net)"
+                label={t("PRICE_NET")}
               />
               <NumberInput
                 required={true}
                 value={invoiceForm.priceGross}
                 onChange={onAmountGrossChange}
                 precision={2}
-                label="Price (brut)"
+                label={t("PRICE_BRUT")}
               />
             </div>
           </SimpleGrid>
