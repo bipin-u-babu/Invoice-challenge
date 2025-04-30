@@ -50,6 +50,6 @@ class InvoiceBoundary(
     fun deleteInvoice(
         @PathVariable("id") id: Long
     ) {
-        invoiceRepository.deleteById(id)
+        invoiceService.deleteInvoice(id)
     }
 }

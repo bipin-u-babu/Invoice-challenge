@@ -21,4 +21,8 @@ class InvoiceService(private val invoiceRepository: InvoiceRepository) {
         invoice.creationDate = OffsetDateTime.now()
         return invoiceRepository.save(invoice)
     }
+
+    fun deleteInvoice(id: Long) {
+        invoiceRepository.deleteById(id)
+    }
 }
