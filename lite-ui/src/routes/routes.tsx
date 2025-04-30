@@ -5,12 +5,18 @@ import { Invoices } from "../pages/invoice/invoices/Invoices";
 import { TopSecret } from "../pages/top-secret/TopSecret";
 import { EditInvoice } from "../pages/invoice/edit-invoice/EditInvoice";
 import NotFoundPage from "../pages/not-found/NotFound";
+import { AuthProvider } from "../auth/AuthProvider";
+import RequireAuth from "../auth/RequireAuth";
 
 const routes: RouteObject[] = [
   {
     path: "/",
     id: "APP",
-    element: <Shell />,
+    element: (
+      <AuthProvider>
+        <Shell />
+      </AuthProvider>
+    ),
     children: [
       {
         id: "DASH",
@@ -34,7 +40,11 @@ const routes: RouteObject[] = [
       },
       {
         id: "TOPSECRET",
-        element: <TopSecret />,
+        element: (
+          <RequireAuth requiredRole="ADMIN">
+            <TopSecret />
+          </RequireAuth>
+        ),
         path: "top-secret",
       },
     ],

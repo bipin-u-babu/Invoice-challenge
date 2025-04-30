@@ -4,12 +4,13 @@ import { Invoice } from "../Invoice.model";
 import { createInvoice } from "../InvoiceApi";
 import { InvoiceFormState } from "./formState";
 import { useNavigate } from "react-router-dom";
+import useNavigateWithUserId from "../../../routes/useNavigateWithUserId";
 
 export const useInvoiceSubmit = (
   invoiceForm: InvoiceFormState,
   isNewInvoice: boolean
 ) => {
-  const navigate = useNavigate();
+  const navigate = useNavigateWithUserId();
   const submitInvoice = async () => {
     if (!invoiceForm.dueDate) {
       return;

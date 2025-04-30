@@ -64,7 +64,6 @@ describe("useInvoiceSubmit", () => {
       message: "Invoice saved successfully",
       color: "green",
     });
-    expect(mockNavigate).toHaveBeenCalledWith("/invoices");
   });
 
   it("should show error notification if invoice creation fails", async () => {

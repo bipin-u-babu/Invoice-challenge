@@ -4,12 +4,12 @@ import styles from "./Invoices.module.scss";
 import { useEffect, useState } from "react";
 import { Invoice } from "../Invoice.model";
 import { deleteInvoice, fetchAllInvoices } from "../InvoiceApi";
-import { useNavigate } from "react-router-dom";
 import { showNotification } from "@mantine/notifications";
+import useNavigateWithUserId from "../../../routes/useNavigateWithUserId";
 
 const Invoices = (): JSX.Element => {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const navigate = useNavigate();
+  const navigate = useNavigateWithUserId();
 
   useEffect(() => {
     fetchAllInvoices().then((invoices) => {

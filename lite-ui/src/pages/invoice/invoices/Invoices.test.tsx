@@ -1,8 +1,9 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { vi, Mock } from "vitest";
 import { Invoices } from "./Invoices";
 import * as InvoiceApi from "../InvoiceApi";
+import { act } from "react-dom/test-utils";
 
 vi.mock("../InvoiceApi", () => ({
   fetchAllInvoices: vi.fn(),
@@ -50,8 +51,11 @@ describe("Invoices Component", () => {
     );
 
     const deleteButton = await screen.findByText("Delete");
-    fireEvent.click(deleteButton);
-
-    expect(InvoiceApi.deleteInvoice).toHaveBeenCalledWith(1);
+    await act(async () => {
+      fireEvent.click(deleteButton);
+    });
+    await waitFor(() => {
+      expect(InvoiceApi.deleteInvoice).toHaveBeenCalledWith(1);
+    });
   });
 });

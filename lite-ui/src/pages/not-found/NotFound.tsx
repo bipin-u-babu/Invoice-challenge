@@ -1,9 +1,9 @@
-import { useNavigate } from "react-router-dom";
 import { Button, Title, Text, Stack, Center } from "@mantine/core";
 import styles from "./NotFound.module.scss";
+import useNavigateWithUserId from "../../routes/useNavigateWithUserId";
 
 export default function NotFoundPage() {
-  const navigate = useNavigate();
+  const navigate = useNavigateWithUserId();
 
   return (
     <div className={styles["not-found-page"]}>
