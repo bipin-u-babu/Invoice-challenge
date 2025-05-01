@@ -21,7 +21,7 @@ Object.defineProperty(window, "matchMedia", {
 describe("Navigation warning dialog", () => {
   it("should shows the confirmation dialog when navigation is blocked", async () => {
     const userId = "12345";
-    localStorage.setItem("shouldWarn", "true");
+    localStorage.setItem("invoiceForm", "{}");
     render(
       <AuthContext.Provider
         value={{ userId: userId, isAdmin: false, loading: false, role: null }}
@@ -48,7 +48,6 @@ describe("Navigation warning dialog", () => {
 
   it("should not shows the confirmation dialog when navigation is not blocked", async () => {
     const userId = "12345";
-    localStorage.setItem("shouldWarn", "false");
     render(
       <AuthContext.Provider
         value={{ userId: userId, isAdmin: false, loading: false, role: null }}

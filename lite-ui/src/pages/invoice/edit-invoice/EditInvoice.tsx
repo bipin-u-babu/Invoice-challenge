@@ -11,22 +11,33 @@ import {
 } from "@mantine/core";
 import styles from "./EditInvoice.module.scss";
 import { useParams } from "react-router-dom";
-import { useEffect, useMemo, useReducer } from "react";
+import { useEffect, useReducer, useRef } from "react";
 import { DatePicker } from "@mantine/dates";
 import { fetchInvoice } from "../InvoiceApi";
-import { formStateHandler, initialInvoiceFormState } from "./formState";
+import {
+  formStateHandler,
+  initialInvoiceFormState,
+  InvoiceFormState,
+} from "./formState";
 import { useInvoiceSubmit } from "./useInvoiceSubmit";
 import { useTranslation } from "react-i18next";
 import { useUnsavedChangesWarning } from "./useUnsavedChangesWarning";
+import { useInvoiceDraft } from "./useInvoiceDraft";
 
 const EditInvoice = (): JSX.Element => {
   const params = useParams();
   const { t } = useTranslation();
+  const isDirty = useRef(false);
+
   const isNewInvoice = params.invoiceId === undefined;
+
+  const { loadDraft, clearDraft, hasDraft, saveDraft } = useInvoiceDraft();
+
   const [invoiceForm, dispatch] = useReducer(
     formStateHandler,
-    initialInvoiceFormState
+    hasDraft() ? (loadDraft() as InvoiceFormState) : initialInvoiceFormState
   );
+
   const submitInvoice = useInvoiceSubmit(
     invoiceForm,
     isNewInvoice
@@ -44,14 +55,16 @@ const EditInvoice = (): JSX.Element => {
     });
   }, []);
 
-  const isDirty = useMemo(() => {
-    // Compare current form state with initial, or use a flag in reducer
-    return (
-      JSON.stringify(invoiceForm) !== JSON.stringify(initialInvoiceFormState)
-    );
+  useEffect(() => {
+    const dirty =
+      JSON.stringify(invoiceForm) !== JSON.stringify(initialInvoiceFormState);
+    isDirty.current = dirty;
+    if (isDirty.current) {
+      saveDraft(invoiceForm);
+    }
   }, [invoiceForm]);
 
-  useUnsavedChangesWarning(isDirty);
+  useUnsavedChangesWarning(isDirty.current);
 
   function onAmountNetChange(value: number | undefined) {
     if (typeof value === "undefined") {
@@ -66,6 +79,11 @@ const EditInvoice = (): JSX.Element => {
     }
     dispatch({ type: "amount-gross", payload: value });
   }
+
+  const handleSubmitInvoice = async () => {
+    await submitInvoice?.();
+    clearDraft();
+  };
 
   return (
     <Container mt={"md"}>
@@ -146,13 +164,7 @@ const EditInvoice = (): JSX.Element => {
           </SimpleGrid>
         </div>
         <Group position="right">
-          <Button
-            onClick={() => {
-              submitInvoice?.();
-            }}
-          >
-            Create invoice
-          </Button>
+          <Button onClick={handleSubmitInvoice}>Create invoice</Button>
         </Group>
       </form>
     </Container>

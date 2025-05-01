@@ -13,7 +13,7 @@ const Navigation = ({ opened }: NavigationProps): JSX.Element => {
   const location = useLocation();
   const shouldBlockNavigation = () => {
     return (
-      localStorage.getItem("shouldWarn") === "true" &&
+      localStorage.getItem("invoiceForm") !== null &&
       location.pathname === "/edit-invoice/"
     );
   };

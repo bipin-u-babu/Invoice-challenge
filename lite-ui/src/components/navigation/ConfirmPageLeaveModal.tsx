@@ -20,7 +20,7 @@ const ConfirmPageLeaveModal: React.FC<ConfirmLeaveModalProps> = ({
           Cancel
         </Button>
         <Button color="red" onClick={onConfirm}>
-          Leave Page
+          Save & Leave Page
         </Button>
       </Group>
     </Modal>

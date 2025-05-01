@@ -4,8 +4,6 @@ export function useUnsavedChangesWarning(shouldWarn: boolean) {
   const [isBlocking, setIsBlocking] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem("shouldWarn", String(shouldWarn));
-
     const handleBeforeUnload = (e: any) => {
       if (shouldWarn) {
         e.returnValue = "_";
