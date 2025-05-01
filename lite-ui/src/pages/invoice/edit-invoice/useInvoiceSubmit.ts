@@ -34,7 +34,6 @@ export const useInvoiceSubmit = (
       });
       navigate("/invoices");
     } catch (e) {
-      console.error(e);
       showNotification({
         title: "Error",
         message: "Failed to save invoice",

@@ -1,19 +1,33 @@
-import { Button, Table } from "@mantine/core";
+import { Button, Tooltip } from "@mantine/core";
 import clsx from "clsx";
 import styles from "./Invoices.module.scss";
 import { useEffect, useState } from "react";
-import { Invoice } from "../Invoice.model";
+import { Invoice, InvoiceStatus } from "../Invoice.model";
 import { deleteInvoice, fetchAllInvoices } from "../InvoiceApi";
 import { showNotification } from "@mantine/notifications";
 import useNavigateWithUserId from "../../../routes/useNavigateWithUserId";
+import { Column, SortableTable } from "../../../components/table/SortableTable";
+import {
+  IconBan,
+  IconCurrencyEuro,
+  IconFilePencil,
+  IconFolder,
+} from "@tabler/icons";
+
+const statusIcons = {
+  DRAFT: <IconFilePencil size={24} />,
+  OPEN: <IconFolder size={24} />,
+  PAID: <IconCurrencyEuro size={24} />,
+  CANCELLED: <IconBan size={24} />,
+};
 
 const Invoices = (): JSX.Element => {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const navigate = useNavigateWithUserId();
 
   useEffect(() => {
-    fetchAllInvoices().then((invoices) => {
-      setInvoices(invoices);
+    fetchAllInvoices().then((data) => {
+      setInvoices(data);
     });
   }, []);
 
@@ -33,50 +47,66 @@ const Invoices = (): JSX.Element => {
     }
   };
 
-  const rows = invoices.map((invoice) => (
-    <tr
-      className={styles["invoice-table-row"]}
-      key={invoice.id}
-      onClick={() => {
-        navigate(`/edit-invoice/${invoice.id}`);
-      }}
-    >
-      <td>{invoice.status}</td>
-      <td>{new Date(invoice.dueDate).toLocaleDateString("en-GB")}</td>
-      <td>{invoice.invoiceNumber}</td>
-      <td>{`${invoice.customer.givenname} ${invoice.customer.surname}`}</td>
-      <td>
-        {invoice.creationDate
-          ? new Date(invoice.creationDate).toLocaleDateString("en-GB")
-          : "-"}
-      </td>
-      <td>{invoice.priceNet}</td>
-      <td>{invoice.priceGross}</td>
-      <td>
-        <Button onClick={(e: any) => handleDelete(e, invoice.id)}>
-          Delete
-        </Button>
-      </td>
-    </tr>
-  ));
+  const columns: Column<Invoice>[] = [
+    {
+      label: "Status",
+      accessor: "status",
+      render: (i) => {
+        return (
+          <Tooltip label={i.status}>
+            <span
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+              style={{ cursor: "default" }}
+            >
+              {statusIcons[i.status]}
+            </span>
+          </Tooltip>
+        );
+      },
+    },
+    {
+      label: "Due date",
+      accessor: "dueDate",
+      render: (i) => new Date(i.dueDate).toLocaleDateString("en-GB"),
+    },
+    { label: "Number", accessor: "invoiceNumber" },
+    {
+      label: "Customer",
+      accessor: "customer.givenname",
+      render: (i) => `${i.customer.givenname} ${i.customer.surname}`,
+    },
+    {
+      label: "Create date",
+      accessor: "creationDate",
+      render: (i) =>
+        i.creationDate
+          ? new Date(i.creationDate).toLocaleDateString("en-GB")
+          : "-",
+    },
+    { label: "Net price", accessor: "priceNet" },
+    { label: "Gross price", accessor: "priceGross" },
+    {
+      label: "Actions",
+      accessor: "actions",
+      render: (i) => (
+        <Tooltip label="delete">
+          <Button onClick={(e: any) => handleDelete(e, i.id)}>Delete</Button>
+        </Tooltip>
+      ),
+    },
+  ];
 
   return (
     <div className={clsx(styles["invoices"])}>
-      <Table highlightOnHover>
-        <thead>
-          <tr>
-            <th>Status</th>
-            <th>Due date</th>
-            <th>Number</th>
-            <th>Customer</th>
-            <th>Create date</th>
-            <th>Net price</th>
-            <th>Gross price</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>{rows}</tbody>
-      </Table>
+      <SortableTable
+        intialSortBy="dueDate"
+        data={invoices}
+        columns={columns}
+        rowKey={(i) => i.id || ""}
+        onRowClick={(i) => navigate(`/edit-invoice/${i.id}`)}
+      />
     </div>
   );
 };

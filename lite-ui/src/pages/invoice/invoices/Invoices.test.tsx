@@ -10,6 +10,20 @@ vi.mock("../InvoiceApi", () => ({
   deleteInvoice: vi.fn(),
 }));
 
+Object.defineProperty(window, "matchMedia", {
+  writable: true,
+  value: vi.fn().mockImplementation((query) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
+
 describe("Invoices Component", () => {
   const mockInvoices = [
     {
@@ -36,9 +50,10 @@ describe("Invoices Component", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByText("Paid")).toBeInTheDocument();
-    expect(screen.getByText("INV-001")).toBeInTheDocument();
-    expect(screen.getByText("John Doe")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("INV-001")).toBeInTheDocument();
+      expect(screen.getByText("John Doe")).toBeInTheDocument();
+    });
   });
 
   it("should call delete  when delete button is clicked", async () => {
