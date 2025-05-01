@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { TopSecret } from "../../pages/top-secret/TopSecret";
 import RequireAuth from "../../auth/RequireAuth";
-import { AuthContext, AuthProvider } from "../../auth/AuthProvider";
+import { AuthContext } from "../../auth/AuthProvider";
 
 const renderWithRole = (role: string | null) => {
   return render(

@@ -10,13 +10,14 @@ import {
   Button,
 } from "@mantine/core";
 import styles from "./EditInvoice.module.scss";
-import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useReducer } from "react";
+import { useParams } from "react-router-dom";
+import { useEffect, useMemo, useReducer } from "react";
 import { DatePicker } from "@mantine/dates";
 import { fetchInvoice } from "../InvoiceApi";
 import { formStateHandler, initialInvoiceFormState } from "./formState";
 import { useInvoiceSubmit } from "./useInvoiceSubmit";
 import { useTranslation } from "react-i18next";
+import { useUnsavedChangesWarning } from "./useUnsavedChangesWarning";
 
 const EditInvoice = (): JSX.Element => {
   const params = useParams();
@@ -42,6 +43,15 @@ const EditInvoice = (): JSX.Element => {
       dispatch({ type: "fill-invoice", payload: invoice });
     });
   }, []);
+
+  const isDirty = useMemo(() => {
+    // Compare current form state with initial, or use a flag in reducer
+    return (
+      JSON.stringify(invoiceForm) !== JSON.stringify(initialInvoiceFormState)
+    );
+  }, [invoiceForm]);
+
+  useUnsavedChangesWarning(isDirty);
 
   function onAmountNetChange(value: number | undefined) {
     if (typeof value === "undefined") {

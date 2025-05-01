@@ -1,21 +1,22 @@
-import { Navbar, NavLink } from "@mantine/core";
+import { Navbar } from "@mantine/core";
 import { IconBook2, IconBrandAmongus, IconHome2 } from "@tabler/icons";
-import { Link, RouteObject } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useAuth } from "../../auth/AuthProvider";
+import CustomNavLink from "./CustomNavLink";
 
 interface NavigationProps {
   opened: boolean;
 }
 
-type LinkDisplayOptions = {
-  label: string;
-  icon: JSX.Element;
-};
-
-type NavigationLink = RouteObject & LinkDisplayOptions;
-
 const Navigation = ({ opened }: NavigationProps): JSX.Element => {
   const { userId, isAdmin } = useAuth();
+  const location = useLocation();
+  const shouldBlockNavigation = () => {
+    return (
+      localStorage.getItem("shouldWarn") === "true" &&
+      location.pathname === "/edit-invoice/"
+    );
+  };
   return (
     <Navbar
       p="md"
@@ -23,22 +24,25 @@ const Navigation = ({ opened }: NavigationProps): JSX.Element => {
       hidden={!opened}
       width={{ sm: 200, lg: 300 }}
     >
-      <Link to={`/?userId=${userId}`}>
-        <NavLink label="Home" icon={<IconHome2 size={16} stroke={1.5} />} />
-      </Link>
-      <Link to={`/invoices?userId=${userId}`}>
-        <NavLink
-          label={"Invoices"}
-          icon={<IconBook2 size={16} stroke={1.5} />}
-        />
-      </Link>
+      <CustomNavLink
+        to={`/?userId=${userId}`}
+        label="Home"
+        icon={<IconHome2 size={16} stroke={1.5} />}
+        shouldBlockNavigation={shouldBlockNavigation}
+      />
+      <CustomNavLink
+        to={`/invoices?userId=${userId}`}
+        label={"Invoices"}
+        icon={<IconBook2 size={16} stroke={1.5} />}
+        shouldBlockNavigation={shouldBlockNavigation}
+      />
       {isAdmin && (
-        <Link to={`/top-secret?userId=${userId}`}>
-          <NavLink
-            label={"Top Secret"}
-            icon={<IconBrandAmongus size={16} stroke={1.5} />}
-          />
-        </Link>
+        <CustomNavLink
+          to={`/top-secret?userId=${userId}`}
+          label={"Top Secret"}
+          icon={<IconBrandAmongus size={16} stroke={1.5} />}
+          shouldBlockNavigation={shouldBlockNavigation}
+        />
       )}
     </Navbar>
   );
