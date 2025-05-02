@@ -34,6 +34,8 @@
 
   - The page "Top Secret" contains some highly confidential information. It should only be available to admin users. Hide the corresponding navigation item if a user is not an admin. Prevent all navigation to the corresponding route and show the user a hint that he is not allowed to access it.
 
-This feature is implemented in such a way that the user ID needs to be provided through the URL parameters in order to see the "Top Secret" navigation item and access the page. The implementation takes the user ID from the URL parameters, makes a request, fetches the access role, and shows the page based on that. The URL parameters are used to simplify the approach. Ideally, user details should be obtained from the logged-in user, and the route will be displayed depending on that user data.
+This feature is implemented in such a way that the user ID needs to be provided through the URL parameters in order to see the "Top Secret" navigation item and access the page. The implementation takes the user ID from the URL parameters, makes a request, fetches the access role. The URL parameters are used to simplify the approach. Ideally, user details should be obtained from the logged-in user, and the route will be displayed depending on that user data.
+
+By default, when you access the page, you will be logged in as a user with ID 1, and the user role will be USER, so you won't be able to see the "Top Secret" page. However, if your user ID is 5 and your user role is (USER, ADMIN), you will be able to access the page. This is hardcoded on the backend.
 
 eg:- http://localhost:5174/invoices?userId=5
